@@ -1,0 +1,41 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun May 31 21:16:17 2020
+
+@author: Otto
+"""
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+dfcma = pd.read_csv('custos marginais de abatimento2.csv', sep = ';',encoding = "ISO-8859-1") #Import the data. consider change the sep from ';' to ','
+
+#dfcma = pd.DataFrame(cma,columns = ['nome da medida','custo da medida','quantidade abatida']) #defining the columns
+dfcma = dfcma.sort_values('custo da medida') #sorting the values by cost;
+
+quantidade_abatida_acumulada = dfcma['quantidade abatida'].cumsum(0) #creating the total acumulated emissions mitigated
+
+dfcma['quantidade abatida acumulada'] = quantidade_abatida_acumulada #creating a column for the acumulated emissions mitigated
+
+label = dfcma['nome da medida']   
+
+x = list(dfcma['quantidade abatida acumulada'])
+x = [0]+x
+y= list(dfcma ['custo da medida'])
+y= y[0:1]+y
+
+plt.xlim(xmin=0,xmax=x[-1])
+#fig1 = plt.step(x,y,where='pre')
+plt.fill_between(x,y, step="pre",alpha=0.4)
+plt.axhline(y=0,color= 'black')
+sns.lineplot(x,y,drawstyle='steps-pre')
+
+for i, txt in enumerate(dfcma['nome da medida']):
+    if i==0:
+        pass
+    else:
+#    plt.annotate(i, (dfcma['quantidade abatida acumulada'][i],dfcma['custo da medida'][i]))
+        plt.annotate(i, (dfcma['quantidade abatida acumulada'][i],dfcma['custo da medida'][i]),xytext=(0, -17), textcoords='offset points',arrowprops=dict(arrowstyle="-",relpos=(0,0)),va= 'center')
+
+plt.savefig("teste.jpg",dpi=180,bbox_inches=None)
